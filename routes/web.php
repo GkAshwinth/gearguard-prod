@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\BookingController;
 
@@ -72,11 +71,6 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRole::class . ':owner'])->p
     Route::get('/inventory/{equipment}/edit', [EquipmentController::class, 'edit'])->name('equipment.edit');
     Route::put('/inventory/{equipment}', [EquipmentController::class, 'update'])->name('equipment.update');
     Route::delete('/inventory/{equipment}', [EquipmentController::class, 'destroy'])->name('equipment.destroy');
-});
-
-Route::get('/secret-seed', function () {
-    Artisan::call('db:seed', ['--force' => true]);
-    return 'Database seeded successfully!';
 });
 
 
