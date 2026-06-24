@@ -28,7 +28,7 @@ class EquipmentCatalog extends Component
         $cacheKey = 'equipment_catalog_' . md5($this->search . '_' . $this->category . '_' . $this->getPage());
         
         $equipments = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () {
-            $query = Equipment::all()->toQuery(); // Applies global scope safely
+            $query = Equipment::query();
             
             if ($this->search) {
                 $query->where('name', 'like', '%' . $this->search . '%');
