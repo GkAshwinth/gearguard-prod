@@ -38,10 +38,10 @@
         {{-- Busy Dates Info --}}
         @if($busyDates->count())
         <div class="mt-10 bg-amber-50 border border-amber-200 rounded-xl p-5">
-            <h3 class="font-semibold text-black mb-3">Already Booked Dates</h3>
+            <h3 class="font-semibold mb-3" style="color: #000000 !important;">Already Booked Dates</h3>
             <div class="flex flex-wrap gap-2">
                 @foreach($busyDates as $period)
-                    <span class="bg-amber-100 text-amber-800 text-sm px-3 py-1 rounded-full">
+                    <span class="bg-amber-100 text-sm px-3 py-1 rounded-full font-medium" style="color: #000000 !important;">
                         {{ \Carbon\Carbon::parse($period->start_date)->format('M d') }}
                         → {{ \Carbon\Carbon::parse($period->end_date)->format('M d, Y') }}
                     </span>
