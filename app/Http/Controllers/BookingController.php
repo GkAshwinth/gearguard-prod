@@ -57,7 +57,7 @@ class BookingController extends Controller
         $booking = null;
 
         // 2. Database Transaction to prevent Race Conditions (Double Bookings)
-        DB::transaction(function () use ($validated, &$booking) {
+        DB::transaction(function () use ($validated, &$booking, $request) {
             
             // Lock the table row to double-check nobody booked it in the last millisecond
             $conflict = Booking::where('equipment_id', $validated['equipment_id'])
@@ -90,10 +90,19 @@ class BookingController extends Controller
                 'total_cost' => $totalCost,
                 'status' => 'pending', // Requires admin approval
                 'payment_status' => 'unpaid',
+                'transaction_id' => $request->input('payment_method') === 'cod' ? 'COD' : null,
             ]);
         });
 
-        // 4. Initialize Stripe Checkout
+        // 4. Handle Cash on Delivery Payment Method
+        if ($request->input('payment_method') === 'cod') {
+            SendBookingConfirmationEmail::dispatch($booking);
+            BookingCreated::dispatch($booking);
+
+            return redirect()->route('dashboard')->with('success', 'Booking confirmed (Cash on Delivery)! Your booking is now awaiting admin approval.');
+        }
+
+        // 5. Initialize Stripe Checkout
         $stripeSecret = env('STRIPE_SECRET', 'sk_test_mock');
         
         // MOCK BYPASS: If no real Stripe key is provided, fake the checkout for testing/demo purposes.

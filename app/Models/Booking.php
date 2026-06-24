@@ -18,6 +18,8 @@ class Booking extends Model
         'total_cost',
         'status',
         'cancellation_reason',
+        'payment_status',
+        'transaction_id',
     ];
 
     protected $casts = [

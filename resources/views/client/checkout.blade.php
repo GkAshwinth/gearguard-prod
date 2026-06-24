@@ -72,44 +72,47 @@
 
             {{-- Method Tabs --}}
             <div class="grid grid-cols-2 gap-4 mb-6">
-                <button type="button" class="w-full py-3 text-center rounded-xl font-bold bg-[#5c54f1] text-white transition shadow-lg">
+                <button type="button" id="tab-card" onclick="setPaymentMethod('card')" class="w-full py-3 text-center rounded-xl font-bold bg-[#5c54f1] text-white transition shadow-lg animate-fade-in">
                     Credit Card
                 </button>
-                <button type="button" class="w-full py-3 text-center rounded-xl font-bold bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-slate-200 transition">
+                <button type="button" id="tab-cod" onclick="setPaymentMethod('cod')" class="w-full py-3 text-center rounded-xl font-bold bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-slate-200 transition">
                     Cash on Delivery
                 </button>
             </div>
 
             {{-- Mock Checkout Form --}}
-            <form action="{{ route('bookings.store') }}" method="POST" class="space-y-5 mt-6">
+            <form action="{{ route('bookings.store') }}" method="POST" id="checkout-form" class="space-y-5 mt-6">
                 @csrf
                 <input type="hidden" name="equipment_id" value="{{ $equipment->id }}">
                 <input type="hidden" name="start_date" value="{{ $startDate }}">
                 <input type="hidden" name="end_date" value="{{ $endDate }}">
+                <input type="hidden" name="payment_method" id="payment_method" value="card">
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Name on Card</label>
-                    <input type="text" required class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900" placeholder="John Doe">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Card Number</label>
-                    <input type="text" required pattern="[0-9\s]{16,19}" title="Please enter a valid 16-digit card number" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900" placeholder="0000 0000 0000 0000">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
+                <div id="card-details-section" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Expiry Date</label>
-                        <input type="text" required pattern="(0[1-9]|1[0-2])\/[0-9]{2}" title="Please enter a valid expiry date (MM/YY)" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900" placeholder="MM/YY">
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Name on Card</label>
+                        <input type="text" id="card-name" required class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 animate-fade-in" placeholder="John Doe">
                     </div>
+
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">CVV</label>
-                        <input type="text" required pattern="[0-9]{3,4}" title="Please enter a 3 or 4 digit CVV" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900" placeholder="123">
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Card Number</label>
+                        <input type="text" id="card-number" required pattern="[0-9\s]{16,19}" title="Please enter a valid 16-digit card number" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 animate-fade-in" placeholder="0000 0000 0000 0000">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">Expiry Date</label>
+                            <input type="text" id="card-expiry" required pattern="(0[1-9]|1[0-2])\/[0-9]{2}" title="Please enter a valid expiry date (MM/YY)" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 animate-fade-in" placeholder="MM/YY">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-1">CVV</label>
+                            <input type="text" id="card-cvv" required pattern="[0-9]{3,4}" title="Please enter a 3 or 4 digit CVV" class="w-full bg-white border border-slate-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900" placeholder="123 animate-fade-in">
+                        </div>
                     </div>
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit"
+                    <button type="submit" id="submit-btn"
                             class="w-full py-3 bg-[#ea580c] hover:bg-[#c2410c] rounded-md font-bold text-lg text-white transition shadow-sm">
                         Pay LKR {{ number_format($total, 2) }}
                     </button>
@@ -120,6 +123,54 @@
                 </div>
             </form>
         </div>
+
+        <script>
+            function setPaymentMethod(method) {
+                const tabCard = document.getElementById('tab-card');
+                const tabCod = document.getElementById('tab-cod');
+                const paymentMethodInput = document.getElementById('payment_method');
+                const cardSection = document.getElementById('card-details-section');
+                const submitBtn = document.getElementById('submit-btn');
+
+                // Card Inputs
+                const cardName = document.getElementById('card-name');
+                const cardNumber = document.getElementById('card-number');
+                const cardExpiry = document.getElementById('card-expiry');
+                const cardCvv = document.getElementById('card-cvv');
+
+                paymentMethodInput.value = method;
+
+                if (method === 'card') {
+                    // Update tab styles
+                    tabCard.className = "w-full py-3 text-center rounded-xl font-bold bg-[#5c54f1] text-white transition shadow-lg";
+                    tabCod.className = "w-full py-3 text-center rounded-xl font-bold bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-slate-200 transition";
+                    
+                    // Show card section & require inputs
+                    cardSection.style.display = 'block';
+                    cardName.required = true;
+                    cardNumber.required = true;
+                    cardExpiry.required = true;
+                    cardCvv.required = true;
+
+                    // Update submit button text
+                    submitBtn.innerText = "Pay LKR {{ number_format($total, 2) }}";
+                } else {
+                    // Update tab styles
+                    tabCard.className = "w-full py-3 text-center rounded-xl font-bold bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-slate-200 transition";
+                    tabCod.className = "w-full py-3 text-center rounded-xl font-bold bg-[#5c54f1] text-white transition shadow-lg";
+
+                    // Hide card section & unrequire inputs
+                    cardSection.style.display = 'none';
+                    cardName.required = false;
+                    cardNumber.required = false;
+                    cardExpiry.required = false;
+                    cardCvv.required = false;
+
+                    // Update submit button text
+                    submitBtn.innerText = "Confirm Booking (Cash on Delivery)";
+                }
+            }
+        </script>
 
     </div>
 </x-app-layout>
