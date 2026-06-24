@@ -34,6 +34,26 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        User::updateOrCreate(
+            ['email' => 'admin@test.com'],
+            [
+                'name'           => 'Test Admin',
+                'password'       => Hash::make('password'),
+                'role'           => 'owner',
+                'contact_number' => '0771112222',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'client@test.com'],
+            [
+                'name'           => 'Test Client Secondary',
+                'password'       => Hash::make('password'),
+                'role'           => 'client',
+                'contact_number' => '0773334444',
+            ]
+        );
+
         // ── Equipment Seed Data ────────────────────────────────────────────
 
         $items = [
